@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<!--
+Описать по мат модели все (формулы)
+Блок схема ИМЕННО МАТ МОДЕЛИ а не программы
+объяснит в курсаче алгоритм на упрощенном примере по заданию, что бы было понятно по какой логике будет вестись расчет
+-->
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <title>ОПР - выбор оптимального смартфона для сотрудников</title>
+        <meta name="description" content="Программа для выбора оптимального смартфона для сотрудников организации">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <link rel="stylesheet" href="styles/style.css" type="text/css">
+        <link rel="icon" href="favicon.png"> <!--32х32-->
+        <link rel="apple-touch-icon" href="src/icons/touch-icon-iphone.png"> <!--60х60-->
+        <link rel="apple-touch-icon" sizes="76x76" href="src/icons/touch-icon-ipad.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="src/icons/touch-icon-iphone-retina.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="src/icons/touch-icon-ipad-retina.png">
+        <!-- open graph -->
+        <meta property="og:title" content="ОПР - выбор оптимального смартфона для сотрудников" />
+        <meta property="og:image" content="src/icons/og.png" /> <!-- OG image is 1200×630 pixels  -->
+        <meta property="og:description" content="Программа для выбора оптимального смартфона для сотрудников организации" /> <!-- not important -->
+        <meta property="og:locale" content="ru_RU" /> <!-- default: "en_US" -->
+
+        <script defer src="./js/default.js"></script>
+        <script defer src="./js/smartphone.js"></script>
+        <script defer src="./js/textCanvas.js"></script>
+        
+        <script defer src="./js/single.js"></script>
+        <script defer src="./js/rang.js"></script>
+        <script defer src="./js/pareto.js"></script>
+        <script defer src="./js/electra.js"></script>
+
+        <script defer src="./js/app.js"></script>
+    </head>
+
+    <body>       
+        <header>
+            <div class="container">
+                <img src="./src/images/logo_white.png">
+                <h1>Выбор<br>оптимального<br>смартфона</h1>
+            </div>
+        </header>
+        <main>
+            <div class="container">
+                <section class="about show">
+                    <h2>Критерии выбора:</h2>
+                    <ol>
+                        <li>Стоимость</li>
+                        <li>Процессор (число ядер)</li>
+                        <li>Операционная система</li>
+                        <li>Камера (Мпиксел)</li>
+                        <li>Отзывы пользователей</li>
+                    </ol>
+                    <h2>Однокритериальная оптимизация:</h2>
+                    <ul>
+                        <li id="single-btn" class="li-btn">Параметр – стоимость</li>
+                    </ul>
+                    <h2>Многокритериальная оптимизация:</h2>				
+                    <ul>
+                        <li id="rang-btn" class="li-btn">Метод экспертного анализа – метод Ранга (Число экспертов – 2)</li>
+                        <li id="pareto-btn" class="li-btn">Метод отбора – Парето.</li>
+                        <li id="electra-btn" class="li-btn">Выбор лучшего решения – Электра</li>
+                    </ul>
+                </section>
+
+                <section class="result">
+                    <div class="remove-div" id="remove-result">X</div>
+                    <div id="single-result">
+                        <select>
+                            <option value="OS">Операционная система</option>
+                            <option value="cores">Число ядер процессора</option>
+                            <option value="camera">Камера</option>
+                            <option value="rating">Рейтинг покупателей</option>
+                            <option value="price" selected>Цена</option>
+                        </select>
+                    </div>
+                    <div id="rang-result">
+                        <div class="half">
+                            <h3>Оценки эксперта № 1</h3>
+                            <table id="rang-1" border="1" cellpadding="2">
+                                <thead>
+                                    <th>МОДЕЛЬ</th>
+                                    <th>Оценка</th>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div class="half">
+                            <h3>Оценки эксперта № 2</h3>
+                            <table id="rang-2" border="1" cellpadding="2">
+                                <thead>
+                                    <th>МОДЕЛЬ</th>
+                                    <th>Оценка</th>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <table style="display: none;" id="result-rang-table" border="1" cellpadding="2">
+                            <thead>
+                                <th>МОДЕЛЬ</th>
+                                <th>Операционная система</th>
+                                <th>Число ядер процессора</th>
+                                <th>Камера</th>
+                                <th>Рейтинг</th>
+                                <th>Цена</th>
+                                <th>Вес</th>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div id="pareto-result">
+                        <input id="pareto-OS" type="checkbox" checked><label for="pareto-OS">Операционная система</label>
+                        <input id="pareto-cores" type="checkbox" checked><label for="pareto-cores">Число ядер процессора</label>
+                        <input id="pareto-camera" type="checkbox" checked><label for="pareto-camera">Камера</label>
+                        <input id="pareto-rating" type="checkbox" checked><label for="pareto-rating">Рейтинг покупателей</label>
+                        <input id="pareto-price" type="checkbox" checked><label for="pareto-price">Цена</label>
+
+                        <canvas id="pareto-canvas"></canvas>
+                    </div>
+                    <div id="electra-result">
+                        <h3>Оценки (1...10) важности каждого из параметров</h3>
+                        <div>
+                            <label for="electra-OS-mark">Операционная система:</label>
+                            <input id="electra-OS-mark" onchange="setElectroMark(this)" type="number" value="0", min="1", max="10", step="1">
+                        </div>
+                        <div>
+                            <label for="electra-cores-mark">Число ядер процессора:</label>
+                            <input id="electra-cores-mark" onchange="setElectroMark(this)" type="number" value="0", min="1", max="10", step="1">
+                        </div>
+                        <div>
+                            <label for="electra-camera-mark">Камера:</label>
+                            <input id="electra-camera-mark" onchange="setElectroMark(this)" type="number" value="0", min="1", max="10", step="1">
+                        </div>
+                        <div>
+                            <label for="electra-rating-mark">Рейтинг покупателей:</label>
+                            <input id="electra-rating-mark" onchange="setElectroMark(this)" type="number" value="0", min="1", max="10", step="1">
+                        </div>
+                        <div>
+                            <label for="electra-price-mark">Цена:</label>
+                            <input id="electra-price-mark" onchange="setElectroMark(this)" type="number" value="0", min="1", max="10", step="1">
+                        </div>
+
+                        <table style="display: none;" id="result-electra-table" border="1" cellpadding="2">
+                            <thead>
+                                <th>МОДЕЛЬ</th>
+                                <th>Операционная система</th>
+                                <th>Число ядер процессора</th>
+                                <th>Камера</th>
+                                <th>Рейтинг</th>
+                                <th>Цена</th>
+                                <th>Вес</th>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <table id="result-table" border="1" cellpadding="2">
+                        <thead>
+                            <th>МОДЕЛЬ</th>
+                            <th>Операционная система</th>
+                            <th>Число ядер процессора</th>
+                            <th>Камера</th>
+                            <th>Рейтинг</th>
+                            <th>Цена</th>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <button id="result-filter-button">УДАЛИТЬ ХУДШИЕ МОДЕЛИ ИЗ СПИСКА</button>
+                </section>
+                
+                <section class="smartphones"></section>
+
+                <section>
+                    <button id="add-smartphone">Добавить смартфон</button>
+                </section>
+            </div>
+        </main>
+        <footer>
+            <div class="container">
+                ЗИТ-51 Мирге М.А.
+            </div>
+        </footer>
+        <aside id="default-smartphones-fill">
+            Сгенерировать смартфоны
+        </aside>
+        <aside id="default-experts-fill">
+            Сгенерировать экспертов
+        </aside>
+        <aside id="default-marks-fill">
+            Сгенерировать оценки
+        </aside>
+    </body>
+</html>
